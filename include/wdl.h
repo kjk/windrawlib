@@ -45,101 +45,6 @@ extern "C" {
 #endif
 
 
-/***************
- ***  Color  ***
- ***************/
-
-/* 32-bit integer type representing a color.
- *
- * The color is made of four 8-bit components: red, green, blue and also
- * (optionally) alpha.
- *
- * The red, green and blue components range from most intensive (255) to
- * least intensive (0), and the alpha component from fully opaque (255) to
- * fully transparent (0).
- */
-typedef DWORD WD_COLOR;
-
-#define WD_ARGB(a,r,g,b)                                                    \
-        ((((WD_COLOR)(a) & 0xff) << 24) | (((WD_COLOR)(r) & 0xff) << 16) |  \
-         (((WD_COLOR)(g) & 0xff) << 8)  | (((WD_COLOR)(b) & 0xff) << 0))
-#define WD_RGB(r,g,b)               WD_ARGB(255,(r),(g),(b))
-
-#define WD_AVALUE(color)            (((WD_COLOR)(color) & 0xff000000U) >> 24)
-#define WD_RVALUE(color)            (((WD_COLOR)(color) & 0x00ff0000U) >> 16)
-#define WD_GVALUE(color)            (((WD_COLOR)(color) & 0x0000ff00U) >> 8)
-#define WD_BVALUE(color)            (((WD_COLOR)(color) & 0x000000ffU) >> 0)
-
-/* Create WD_COLOR from GDI's COLORREF. */
-#define WD_COLOR_FROM_GDI_EX(a, cref)                                       \
-        WD_ARGB((a), GetRValue(cref), GetGValue(cref), GetBValue(cref))
-#define WD_COLOR_FROM_GDI(cref)     WD_COLOR_FROM_GDI_EX(255,(cref))
-
-/* Get GDI's COLORREF from WD_COLOR. */
-#define WD_COLOR_TO_GDI(color)                                              \
-        RGB(WD_RVALUE(color), WD_GVALUE(color), WD_BVALUE(color))
-
-
-/*****************************
- ***  2D Geometry Objects  ***
- *****************************/
-
-typedef struct WD_POINT_tag WD_POINT;
-struct WD_POINT_tag {
-    float x;
-    float y;
-};
-
-typedef struct WD_RECT_tag WD_RECT;
-struct WD_RECT_tag {
-    float x0;
-    float y0;
-    float x1;
-    float y1;
-};
-
-typedef struct WD_MATRIX_tag WD_MATRIX;
-struct WD_MATRIX_tag {
-    float m11;
-    float m12;
-    float m21;
-    float m22;
-    float dx;
-    float dy;
-};
-
-/************************
- ***  Initialization  ***
- ************************/
-
-/* If the library is to be used in a context of multiple threads concurrently,
- * application has to provide pointers to synchronization functions.
- *
- * Note that even then, object instances (like e.g. canvas, brushes, images)
- * cannot be used concurrently, each thread must work with its own objects.
- *
- * This function may be called only once, prior to any other use of the library,
- * even prior any call to wdInitialize().
- *
- * Additionally wdPreInitialize() allows application to disable certain
- * features:
- *
- * WD_DISABLE_D2D: Disable D2D back-end.
- *
- * WD_DISABLE_GDIPLUS: Disable GDI+ back-end.
- *
- * Note: If all back-ends are disabled, wdInitialize() will subsequently fail.
- *
- * Note 2: wdPreinitialize() can (unlike wdInitialize()) be called from
- * DllMain() context.
- */
-
-#define WD_DISABLE_D2D              0x0001
-#define WD_DISABLE_GDIPLUS          0x0002
-
-void wdPreInitialize(void (*fnLock)(void), void (*fnUnlock)(void), DWORD dwFlags);
-
-
 /* Initialization functions may be called multiple times, even concurrently
  * (assuming a synchronization function have been provided via wdPreInitialize()).
  *
@@ -165,20 +70,6 @@ void wdTerminate(DWORD dwFlags);
 #define WD_BACKEND_GDIPLUS      2
 
 int wdBackend(void);
-
-
-/*******************************
- ***  Opaque Object Handles  ***
- *******************************/
-
-typedef struct WD_BRUSH_tag *WD_HBRUSH;
-typedef struct WD_HSTROKESTYLE_tag *WD_HSTROKESTYLE;
-typedef struct WD_CANVAS_tag *WD_HCANVAS;
-typedef struct WD_FONT_tag *WD_HFONT;
-typedef struct WD_IMAGE_tag *WD_HIMAGE;
-typedef struct WD_CACHEDIMAGE_tag* WD_HCACHEDIMAGE;
-typedef struct WD_PATH_tag *WD_HPATH;
-
 
 /***************************
  ***  Canvas Management  ***
