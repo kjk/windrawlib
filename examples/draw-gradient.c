@@ -89,7 +89,6 @@ _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nC
     WNDCLASS wc = { 0 };
     MSG msg;
 
-    wdPreInitialize(NULL, NULL, 0);
     wdInitialize(0);
 
     /* Register main window class */

@@ -44,25 +44,6 @@ extern "C" {
     #define WD_INLINE   static
 #endif
 
-
-/* Initialization functions may be called multiple times, even concurrently
- * (assuming a synchronization function have been provided via wdPreInitialize()).
- *
- * The library maintains a counter for each module and it gets really
- * uninitialized when the respective counter drops back to zero.
- *
- * The corresponding pairs of wdInitialize() and wdTerminate() should be
- * always called with the same flags, otherwise you may cause a resource leak.
- *
- * Note: These functions cannot be called from DllMain().
- */
-#define WD_INIT_COREAPI             0x0000
-#define WD_INIT_IMAGEAPI            0x0001
-#define WD_INIT_STRINGAPI           0x0002
-
-BOOL wdInitialize(DWORD dwFlags);
-void wdTerminate(DWORD dwFlags);
-
 /* Returns the current backend. 
  * Returns -1 if there is none.
  */
